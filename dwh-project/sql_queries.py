@@ -137,7 +137,7 @@ region 'us-west-2';
 
 songplay_table_insert = ("""
 insert into songplays (start_time, user_id, level, song_id, artist_id, session_id, location, user_agent)
-select e.ts as start_time,
+select timestamp 'epoch' +  e.ts/1000 * interval '1 Second' as start_time,
        e.userId as user_id,
        e.level,
        s.song_id,
@@ -205,7 +205,7 @@ select times_temp.start_time,
        extract(month from start_time) as month,
        extract(year from start_time) as year,
        extract(dayofweek from start_time) as weekday
-from (
+from ( -- subquery to make extraction of year, day, etc less verbose
   select distinct(timestamp 'epoch' +  e.ts/1000 * interval '1 Second') as start_time
   from staging_events as e
   ) as times_temp;
