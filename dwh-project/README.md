@@ -4,6 +4,8 @@
 ## Contents
 * [About](#about)
 * [File Contents](#file-contents)
+  * [File Descriptions](#file-descriptions)
+  * [Running the Project](#running-the-project)
 * [Database Structure](#database-structure)
 
 ## About
@@ -17,6 +19,7 @@ schema.
 
 ## File Contents
 
+### File Descriptions
 - The `sql_queries.py` file contains the queries necessary to create the tables in the
   database, load the data into these tables, and drop the tables when done.
   
@@ -35,6 +38,19 @@ schema.
   ```
   replacing `<action>` with `create` or `delete`. After creating the cluster, the 
   endpoint and the IAM role ARN are stored in a `cluster_meta.json` file.
+  
+### Running the Project
+In order to run the scripts and create the data warehouse, there are first some preliminary
+steps you must follow: First, copy the `dwh.cfg.example` file to a new `dwh.cfg` file and
+fill in the missing variables with your specific values. This requires you to prepare an
+AWS security group ahead of time (this could be done more cleanly within the scripts but
+this will work for now). 
+
+Then you must prepare your redshift cluster either by launching it yourself or using the
+`make_cluster.py` script. Now you are ready to create and populate the database.
+
+For this last step run the `create_tables.py` script to prepare the tables and then run
+the `etl.py` script to extract the data from S3 and loat it into the tables.
 
 ## Database Structure
 
