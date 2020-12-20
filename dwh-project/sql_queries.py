@@ -163,10 +163,22 @@ from staging_songs as s
 artist_table_insert = ("""
 insert into artists (artist_id, name, location, latitude, longitude)
 select distinct s.artist_id,
-       s.artist_name as name,
-       s.artist_location as location,
-       s.artist_latitude as latitude,
-       s.artist_longitude as longitude
+       first_value(s.artist_name)
+           over (partition by s.artist_id 
+               order by year desc 
+               rows between unbounded preceding and unbounded following) as name,
+       first_value(s.artist_location)
+           over (partition by s.artist_id 
+               order by year desc 
+               rows between unbounded preceding and unbounded following) as location,
+       first_value(s.artist_latitude)
+           over (partition by s.artist_id 
+               order by year desc 
+               rows between unbounded preceding and unbounded following) as latitude,
+       first_value(s.artist_longitude)
+           over (partition by s.artist_id 
+               order by year desc 
+               rows between unbounded preceding and unbounded following) as longitude
 from staging_songs as s;
 """)
 
