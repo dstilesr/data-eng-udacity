@@ -1,12 +1,12 @@
 # Sparkify Data Warehouse
 
-
 ## Contents
 * [About](#about)
 * [File Contents](#file-contents)
   * [File Descriptions](#file-descriptions)
   * [Running the Project](#running-the-project)
 * [Database Structure](#database-structure)
+* [Final Notes](#final-notes)
 
 ## About
 This project contains code to load data from event log files and song info files
@@ -72,6 +72,19 @@ Additionally, there are two staging tables: `staging_events` and `staging_songs`
 tables are used as an intermediate step between extracting the JSON data and loading it
 into the final tables listed above, and as such they should not be considered as part of
 the final database.
+
+## Final Notes
+- I found there were many artist duplicates when extracting them from the `staging_songs`
+  table, so I used the `first_value` function together with `select distinct` to ensure
+  that there are no duplicates by `artist_id` (the `select distinct` statement was not 
+  enough to avoid duplicates on its own).
+  
+- I used the same trick with `last_value` to avoid user duplicates as well while also 
+  assigning each user the last `level` found for them in the songplays data.
+  
+- Since the `time` table is likely to be very large and to be joined frequently with
+  `songplays`, I set the `start_time` column to be a sortkey and distkey on both tables
+  to hopefully reduce shuffling.
 
 
 [Back to top.](#sparkify-data-warehouse)
