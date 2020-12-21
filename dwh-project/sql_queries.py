@@ -30,11 +30,11 @@ create table if not exists staging_events (
     location text,
     method varchar(32),
     page varchar(64),
-    registration double precision,
+    registration varchar(128),
     sessionId integer,
     song text,
     status smallint,
-    ts bigint,
+    ts bigint sortkey,
     userAgent varchar(256),
     userId integer
 );
@@ -156,22 +156,24 @@ select distinct userid as user_id,
        e.firstname as first_name,
        e.lastname as last_name,
        e.gender,
-       last_value(e.level)
+       last_value(e.level)  -- Use this to take only the latest level per user
            over (partition by e.userid
                order by e.ts
                rows between unbounded preceding and unbounded following) as level
 from staging_events as e
-where e.userid is not null;
+where e.userid is not null
+  and e.userid not in (select distinct user_id from users);
 """)
 
 song_table_insert = ("""
 insert into songs (song_id, title, artist_id, year, duration)
-select s.song_id,
+select distinct s.song_id,
        s.title,
        s.artist_id,
        case when s.year = 0 then null else s.year end as year,
        s.duration
 from staging_songs as s
+where s.song_id is not null;
 """)
 
 artist_table_insert = ("""
@@ -193,7 +195,8 @@ select distinct s.artist_id, -- Use first_value to ensure no duplicates by artis
            over (partition by s.artist_id 
                order by year desc 
                rows between unbounded preceding and unbounded following) as longitude
-from staging_songs as s;
+from staging_songs as s
+where s.artist_id is not null;
 """)
 
 time_table_insert = ("""
