@@ -156,12 +156,13 @@ select distinct userid as user_id,
        e.firstname as first_name,
        e.lastname as last_name,
        e.gender,
-       last_value(e.level)  -- Use this to avoid duplicates caused by the LEVEL var
+       last_value(e.level)  -- Use this to take only the latest level per user
            over (partition by e.userid
                order by e.ts
                rows between unbounded preceding and unbounded following) as level
 from staging_events as e
-where e.userid is not null;
+where e.userid is not null
+  and e.userid not in (select distinct user_id from users);
 """)
 
 song_table_insert = ("""
