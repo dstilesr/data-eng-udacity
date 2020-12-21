@@ -4,18 +4,34 @@ from sql_queries import create_table_queries, drop_table_queries
 
 
 def drop_tables(cur, conn):
+    """
+    Drops all tables from the DB.
+    :param cur: Connection cursor.
+    :param conn: Connection to the DB.
+    :return:
+    """
     for query in drop_table_queries:
         cur.execute(query)
         conn.commit()
 
 
 def create_tables(cur, conn):
+    """
+    Creates the staging and final tables in the DB.
+    :param cur: Connection cursor.
+    :param conn: Connection to the DB.
+    :return:
+    """
     for query in create_table_queries:
         cur.execute(query)
         conn.commit()
 
 
 def main():
+    """
+    Drops all tables, then recreates them using the queries from SQL Queries.
+    :return:
+    """
     config = configparser.ConfigParser()
     config.read('dwh.cfg')
 

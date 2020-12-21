@@ -166,7 +166,7 @@ where e.userid is not null;
 
 song_table_insert = ("""
 insert into songs (song_id, title, artist_id, year, duration)
-select s.song_id,
+select distinct s.song_id,
        s.title,
        s.artist_id,
        case when s.year = 0 then null else s.year end as year,
