@@ -28,6 +28,10 @@ def insert_tables(cur, conn):
 
 
 def main():
+    """
+    Extracts the data from S3 and then loads it into the tables.
+    :return:
+    """
     config = configparser.ConfigParser()
     config.read('dwh.cfg')
 
