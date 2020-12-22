@@ -1,4 +1,3 @@
-import os
 import sys
 import json
 from . import cluster_setup, util, constants
@@ -17,6 +16,7 @@ try:
             meta["MasterNodeAddr"],
             "US-West-2-key.pem"
         )
+    sys.exit(0)
 
 except Exception as e:
     print("ERROR: Task Failed!")
