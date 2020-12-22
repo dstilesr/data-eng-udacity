@@ -12,7 +12,7 @@ def get_public_ip() -> Optional[str]:
     """
     out = None
     try:
-        rsp = requests.get("http://ident.me")
+        rsp = requests.get("https://ident.me")
         addr = rsp.text
 
         # Check if we received a valid IPv4
@@ -42,6 +42,7 @@ def make_sg():
     else:
         print("INFO: Local IP: %s" % localip)
         localip = localip + "/32"
+
     sg.authorize_ingress(
         CidrIp=localip,
         FromPort=22,
