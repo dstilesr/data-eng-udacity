@@ -17,7 +17,10 @@ def get_emr_client(region: str = None):
     return boto3.client("emr", region_name=region)
 
 
-def wait_init(cluster_id: str, max_tries: int = 24, wait_time: int = 30) -> str:
+def wait_init(
+        cluster_id: str,
+        max_tries: int = 24,
+        wait_time: int = 30) -> str:
     """
     Waits for the cluster to initialize, then returns the address of the
     master node.
@@ -86,6 +89,7 @@ def delete_cluster(cluster_id: str, sg_id: str = None):
     :param sg_id: Id of additional Security Group.
     :return:
     """
+    print("INFO: Deleting cluster %s" % cluster_id)
     emr = get_emr_client()
     emr.terminate_job_flows(JobFlowIds=[cluster_id])
     print("INFO: Cluster deleted.")

@@ -1,3 +1,4 @@
+import os
 import sys
 import json
 from . import cluster_setup, util, constants
@@ -14,7 +15,11 @@ try:
         meta = cluster_setup.launch_cluster()
         util.make_conn_string(
             meta["MasterNodeAddr"],
-            "US-West-2-key.pem"
+            os.path.join(
+                os.path.expanduser("~"),
+                "ec2-keys",
+                "US-West-2-key.pem"
+            )
         )
     sys.exit(0)
 
