@@ -4,3 +4,4 @@ This repo contains the code done for some projects in the Udacity Data Engineer 
 projects contained are the following:
 
 - Data Warehouses: in the `dwh-project` directory.
+- Data Lakes: in the `data-lakes-project` directory.
