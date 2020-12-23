@@ -3,7 +3,8 @@ import configparser
 from datetime import datetime
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import udf, col
-from pyspark.sql.functions import year, month, dayofmonth, hour, weekofyear, date_format
+from pyspark.sql.functions import year, month
+from pyspark.sql.functions import dayofmonth, hour, weekofyear, date_format
 
 
 def create_spark_session():
@@ -19,11 +20,13 @@ def create_spark_session():
 
 def process_song_data(spark, input_data, output_data):
     """
-    Extracts the data from the song jsons, processes it and saves the resulting
-    `songs` and `artists` tables as parquet files.
+    Extracts the data from the song jsons, processes it and saves the
+    resulting `songs` and `artists` tables as parquet files.
     :param spark: Spark session.
-    :param input_data: Location of the input JSON dataset (S3 or local filesystem address).
-    :param output_data: Location where output files will be stored (S3 or local filesystem address).
+    :param input_data: Location of the input JSON dataset (S3 or local
+        filesystem address).
+    :param output_data: Location where output files will be stored (S3 or
+        local filesystem address).
     """
     # get filepath to song data file
     song_data = input_data + "song_data/*/*/*/*.json"
@@ -41,9 +44,9 @@ def process_song_data(spark, input_data, output_data):
         "song_id",
         "artist_id",
         "title",
-        "case when year > 0 then year else null end as year",  # Year 0 is missing data!
+        "case when year > 0 then year else null end as year",
         "duration"
-    )
+    ) # Year 0 is missing data!
 
     # write songs table to parquet files partitioned by year and artist
     songs_table.write \
