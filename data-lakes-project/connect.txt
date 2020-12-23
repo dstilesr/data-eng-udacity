@@ -5,4 +5,4 @@
 ssh -i <key-file> \
     -L 8890:<master>:8890 \
     -L 18080:<master>:18080 \
-    hadoop@<master>.compute.amazonaws.com
+    hadoop@<master>

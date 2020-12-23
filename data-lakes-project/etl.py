@@ -83,7 +83,7 @@ def process_log_data(spark, input_data, output_data):
         local filesystem address).
     """
     # get filepath to log data file
-    log_data = input_data + "log_data/*.json"
+    log_data = input_data + "log_data/*/*/*.json"
 
     # read log data file
     df = spark.read\
