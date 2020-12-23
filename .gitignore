@@ -157,3 +157,4 @@ dwh-project/log_json_path.json
 # Data Lake Particulars
 data-lakes-project/cluster_meta.json
 **/*.pem
+data-lakes-project/*.cfg

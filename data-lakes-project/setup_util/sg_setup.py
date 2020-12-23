@@ -12,13 +12,12 @@ def get_public_ip() -> Optional[str]:
     """
     out = None
     try:
-        rsp = requests.get("https://ident.me")
-        addr = rsp.text
+        res = requests.get("https://ident.me")
 
         # Check if we received a valid IPv4
-        ipmatch = re.findall(r"^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$", addr)
-        if len(ipmatch) > 0:
-            out = addr
+        ipstr = re.findall(r"^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$", res.text)
+        if len(ipstr) > 0:
+            out = ipstr[0]
     except Exception as e:
         print("WARN: Could not get IP: %s" % str(e))
 
