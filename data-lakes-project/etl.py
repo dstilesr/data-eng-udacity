@@ -2,7 +2,7 @@ import os
 import configparser
 from datetime import datetime
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import udf, col
+from pyspark.sql.functions import udf
 from pyspark.sql.types import TimestampType
 from pyspark.sql.functions import year, month
 from pyspark.sql.functions import monotonically_increasing_id

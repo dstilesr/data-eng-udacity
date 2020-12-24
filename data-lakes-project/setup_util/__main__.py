@@ -6,7 +6,6 @@ from . import cluster_setup, util, constants
 
 try:
     if len(sys.argv) > 1 and sys.argv[1] == "delete":
-        print("INFO: Deleting cluster")
         with open(constants.META_FILE, "r") as f:
             meta = json.load(f)
 

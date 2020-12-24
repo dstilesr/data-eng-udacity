@@ -23,8 +23,7 @@ DEFAULT_CONFIG: dict = {
         ]
     },
     "Applications": [
-        {"Name": "spark"},
-        {"Name": "zeppelin"}
+        {"Name": "spark"}
     ],
     "JobFlowRole": "EMR_EC2_DefaultRole",
     "ServiceRole": "EMR_DefaultRole"

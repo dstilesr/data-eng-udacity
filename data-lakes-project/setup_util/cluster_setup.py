@@ -94,7 +94,10 @@ def delete_cluster(cluster_id: str, sg_id: str = None):
     emr.terminate_job_flows(JobFlowIds=[cluster_id])
     print("INFO: Cluster deleted.")
 
+    print("INFO: Waiting before deleting SG. . .")
+    sleep(360)
     if sg_id is not None:
         delete_sg(sg_id)
 
     os.remove(META_FILE)
+    os.remove("connection.bash")

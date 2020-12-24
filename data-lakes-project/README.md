@@ -50,5 +50,29 @@ and filtered on often, they are partitioned by year and month for storage. Addit
 
 ## Running the Project
 
+### Local
+To run the spark job locally, first you must create a `dl.cfg` configuration file and place it in
+your working directory. To create the file, fill in the following template:
+```dotenv
+[AWS]
+AWS_ACCESS_KEY_ID=
+AWS_SECRET_ACCESS_KEY=
+
+[OUT]
+OUTPUT_lOC=
+```
+The AWS credentials you use here must have read access to S3, and if your `OUTPUT_LOC` is in an S3 bucket,
+then they must also have write access. Once you have done this, you can run the job by running the script.
+
+### Cluster
+To run on an EMR cluster, you must once again write a `dl.cfg` file, but in this case with the following
+template
+```dotenv
+[OUT]
+OUTPUT_lOC=
+```
+since AWS credentials are managed via roles. Then you can copy this and the `etl.py` scripts to your master
+node and submit them via `spark-submit`.
+
 
 [Back to top](#sparkify-data-lake)

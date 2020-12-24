@@ -159,3 +159,4 @@ data-lakes-project/cluster_meta.json
 **/*.pem
 data-lakes-project/*.cfg
 data-lakes-project/data/
+data-lakes-project/connection.bash
