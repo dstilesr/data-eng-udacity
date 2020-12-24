@@ -1,5 +1,4 @@
 import os
-import configparser
 from datetime import datetime
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import udf
@@ -8,15 +7,24 @@ from pyspark.sql.functions import year, month
 from pyspark.sql.functions import monotonically_increasing_id
 
 
-def create_spark_session():
+def create_spark_session(load_aws_jar: bool = False) -> SparkSession:
     """
-    Creates a spark session
+    Creates a spark session.
+    :param load_aws_jar: Load the Hadoop AWS dependency. Set to False when
+        running on EMR Cluster!
     """
-    spark = SparkSession \
+    spark_build = SparkSession \
         .builder \
-        .config("spark.jars.packages", "org.apache.hadoop:hadoop-aws:2.7.0") \
-        .getOrCreate()
-    return spark
+        .appName("SparkifyDL")
+
+    if load_aws_jar:
+        print("INFO: Loading JAR")
+        spark_build = spark_build.config(
+            "spark.jars.packages",
+            "org.apache.hadoop:hadoop-aws:2.7.0"
+        )
+
+    return spark_build.getOrCreate()
 
 
 def process_song_data(spark, input_data, output_data):
@@ -174,20 +182,15 @@ def main():
     Runs the ETL process.
     :return:
     """
-    config = configparser.ConfigParser()
-    config.read('dl.cfg')
+    local_mode = "AWS_ACCESS_KEY_ID" in os.environ.keys()  # Running locally?
 
-    if "AWS" in config:
-        # Credentials are not necessary on a cluster (managed by IAM role)
-        os.environ['AWS_ACCESS_KEY_ID'] = config["AWS"]['AWS_ACCESS_KEY_ID']
-        os.environ['AWS_SECRET_ACCESS_KEY'] = config["AWS"]['AWS_SECRET_ACCESS_KEY']
-
-    spark = create_spark_session()
-    input_data = "s3a://udacity-dend/"
-    output_data = config["OUT"]["OUTPUT_lOC"]
+    spark = create_spark_session(local_mode)
+    input_data = "s3n://udacity-dend/"
+    output_data = os.getenv("OUTPUT_LOC", "hdfs:///user/hadoop/sparkifyloc/")
 
     process_song_data(spark, input_data, output_data)
     process_log_data(spark, input_data, output_data)
+    spark.stop()
 
 
 if __name__ == "__main__":
