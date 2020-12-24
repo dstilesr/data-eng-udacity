@@ -2,6 +2,14 @@
 #  8890   - Zeppelin
 # 18080   - Spark History
 
+# Files copied to master node
+# dl.cfg
+# etl.py
+
+scp -i <key-file> ./dl.cfg hadoop@<master>:~/dl.cfg
+
+scp -i <key-file> ./etl.py hadoop@<master>:~/etl.py
+
 ssh -i <key-file> \
     -L 8890:<master>:8890 \
     -L 18080:<master>:18080 \

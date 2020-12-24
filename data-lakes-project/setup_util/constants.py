@@ -1,6 +1,6 @@
 DEFAULT_CONFIG: dict = {
     "Name": "MyCluster",
-    "ReleaseLabel": "emr-6.0.0",
+    "ReleaseLabel": "emr-6.2.0",
     "Instances": {
         "AdditionalMasterSecurityGroups": [],
         "Ec2KeyName": "US-West-2-key",

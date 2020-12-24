@@ -95,7 +95,7 @@ def delete_cluster(cluster_id: str, sg_id: str = None):
     print("INFO: Cluster deleted.")
 
     print("INFO: Waiting before deleting SG. . .")
-    sleep(360)
+    sleep(300)
     if sg_id is not None:
         delete_sg(sg_id)
 
