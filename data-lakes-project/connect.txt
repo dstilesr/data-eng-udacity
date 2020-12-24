@@ -1,0 +1,8 @@
+# SSH Ports forwarded
+#  8890   - Zeppelin
+# 18080   - Spark History
+
+ssh -i <key-file> \
+    -L 8890:<master>:8890 \
+    -L 18080:<master>:18080 \
+    hadoop@<master>

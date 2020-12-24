@@ -153,3 +153,10 @@ dmypy.json
 dwh-project/dwh.cfg
 dwh-project/cluster_meta.json
 dwh-project/log_json_path.json
+
+# Data Lake Particulars
+data-lakes-project/cluster_meta.json
+**/*.pem
+data-lakes-project/*.cfg
+data-lakes-project/data/
+data-lakes-project/connection.bash
