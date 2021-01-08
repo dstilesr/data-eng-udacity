@@ -9,8 +9,11 @@ export AIRFLOW_HOME=$(pwd)/airflow
 # Use LocalExecutor to allow parallelism
 export AIRFLOW__CORE__EXECUTOR=LocalExecutor
 
-# Connect to locally run mysql
-export AIRFLOW__CORE__SQL_ALCHEMY_CONN=mysql+mysqlconnector://airflow:afpw852@localhost:3306/airflowdb
+# Load vars from .env
+export $(xargs < .env)
+
+# Connection string for locally run mysql
+export AIRFLOW__CORE__SQL_ALCHEMY_CONN=mysql+mysqlconnector://$MYSQL_USER:$MYSQL_PASSWORD@$MYSQL_HOST:3306/$MYSQL_DATABASE
 
 
 ################################
