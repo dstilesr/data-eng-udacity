@@ -12,7 +12,8 @@ whose purpose is to load data from JSON files stored on AWS S3 to the sparkify d
 warehouse hosted on AWS Redshift.
 
 As an important note, **I made some modifications to the code in order to run it with Airflow
-version `2.0`** as opposed to the version `1.10` used in the workspace.
+version `2.0`** as opposed to the version `1.10` used in the workspace. To ensure compatibility,
+you may want to install the python packages from the `requirements.txt` file.
 
 
 # Running the Project
@@ -30,8 +31,14 @@ Once you have started the database, you can start airflow by running the script:
 ```shell
 bash start-airflow.sh
 ```
-This should start the webserver on port 8080 as well as the scheduler (you will be prompted 
-for a password for the airflow user!). Then you must configure a connection to your redshift
-cluster, which you must call `redshift` via the airflow webUI.
+This should start the webserver on port 8080 as well as the scheduler. Note that you will be 
+prompted for a password for the airflow user! Then you must configure a connection to your 
+redshift cluster (you can set this up with the script from `dwh-project`), which you must call 
+`redshift` via the airflow webUI.
+
+To stop the scheduler and webserver, run
+```shell
+bash stop-airflow.sh
+```
 
 [Back to top](#sparkify-data-pipelines)
