@@ -1,0 +1,15 @@
+version: "2.4"
+services:
+  mysqldb:
+    image: library/mysql:latest
+    volumes:
+      - "mysql-airflow-data:/var/lib/mysql"
+    ports:
+      - "3306:3306"
+    env_file:
+      - ".env"
+    mem_limit: 4G
+
+volumes:
+  mysql-airflow-data:
+    driver: local

@@ -1,5 +1,5 @@
-from datetime import datetime, timedelta
 import os
+from datetime import datetime, timedelta
 from airflow import DAG
 from airflow.operators.dummy_operator import DummyOperator
 from airflow.operators import (StageToRedshiftOperator, LoadFactOperator,
@@ -18,7 +18,7 @@ dag = DAG('udac_example_dag',
           default_args=default_args,
           description='Load and transform data in Redshift with Airflow',
           schedule_interval='0 * * * *'
-        )
+          )
 
 start_operator = DummyOperator(task_id='Begin_execution',  dag=dag)
 
