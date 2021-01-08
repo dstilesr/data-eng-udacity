@@ -26,12 +26,18 @@ else
 
   echo "STARTING DB"
   airflow db init \
-  && echo "INITIALIZED" > $(pwd)/dbcheck.txt
+  && echo "INITIALIZED" > $(pwd)/dbcheck.txt \
+  && airflow users create --username admin \
+                          --role Admin \
+                          --firstname dstilesr \
+                          --lastname admin \
+                          --email david@factored.ai
+
 fi
 
 # Start Airflow Scheduler
 airflow scheduler --daemon
 
 # Start webserver
-airflow webserver
+airflow webserver --daemon
 
