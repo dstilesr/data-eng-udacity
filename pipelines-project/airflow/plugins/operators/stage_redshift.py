@@ -25,6 +25,7 @@ class StageToRedshiftOperator(BaseOperator):
                  table_name: str = "staging_events",
                  json_paths: str = "auto",
                  aws_conn_id: str = "",
+                 aws_region: str = "us-west-2",
                  *args,
                  **kwargs):
         """
@@ -36,6 +37,7 @@ class StageToRedshiftOperator(BaseOperator):
         :param table_name: Name of table where data will be loaded.
         :param json_paths: Option for Redshift copy statement.
         :param aws_conn_id: Name of AWS connection to read from S3.
+        :param aws_region: AWS Region name.
         :param kwargs:
         """
         super(StageToRedshiftOperator, self).__init__(*args, **kwargs)
@@ -45,6 +47,7 @@ class StageToRedshiftOperator(BaseOperator):
         self.table_name = table_name
         self.json_paths = json_paths
         self.aws_conn_id = aws_conn_id
+        self.aws_region = aws_region
 
     def execute(self, context):
         """
@@ -56,7 +59,12 @@ class StageToRedshiftOperator(BaseOperator):
             self.log.error("No AWS connection specified!")
             raise ValueError("No AWS connection specified!")
 
-        aws_cred = AwsBaseHook(aws_conn_id=self.aws_conn_id).get_credentials()
+        aws_cred = AwsBaseHook(
+            aws_conn_id=self.aws_conn_id,
+            client_type="s3",
+            region_name=self.aws_region
+        ).get_credentials()
+
         hook = PostgresHook(postgres_conn_id=self._redshift_conn_id)
 
         # Truncate staging table to avoid adding the same data multiple times!
