@@ -4,6 +4,8 @@ APPEND_MODE: bool = False
 
 REDSHIFT_CONN_ID: str = "redshift"
 
+AWS_CONN_ID: str = "aws-conn"
+
 S3_BUCKET_NAME: str = "udacity-dend"
 
 DEFAULT_ARGS = {

@@ -39,7 +39,8 @@ bash start-airflow.sh
 This should start the webserver on port 8080 as well as the scheduler. Note that you will be 
 prompted for a password for the airflow user! Then you must configure a connection to your 
 redshift cluster (you can set this up with the script from `dwh-project`), which you must call 
-`redshift` via the airflow webUI. *Remember to create the tables in the redshift database using
+`redshift` via the airflow webUI, as well as an AWS connection with S3 read access which you 
+must call `aws-conn`. *Remember to create the tables in the redshift database using
 the `airflow/create_tables.sql` script before running the DAG!*
 
 To stop the scheduler and webserver, run

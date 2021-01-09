@@ -1,5 +1,6 @@
 from airflow.models import BaseOperator
 from airflow.utils.decorators import apply_defaults
+from airflow.providers.amazon.aws.hooks.base_aws import AwsBaseHook
 from airflow.providers.postgres.hooks.postgres import PostgresHook
 
 
@@ -11,7 +12,7 @@ class StageToRedshiftOperator(BaseOperator):
 
     COPY_STMT = """
     copy {table} from '{src_path}'
-    credentials 'aws_iam_role={arn}'
+    credentials 'aws_access_key_id={access_key};aws_secret_access_key={secret}'
     json '{json_paths}'
     region 'us-west-2';
     """
@@ -23,7 +24,7 @@ class StageToRedshiftOperator(BaseOperator):
                  s3_path: str = "song_data",
                  table_name: str = "staging_events",
                  json_paths: str = "auto",
-                 role_arn: str = "",
+                 aws_conn_id: str = "",
                  *args,
                  **kwargs):
         """
@@ -34,17 +35,16 @@ class StageToRedshiftOperator(BaseOperator):
         :param s3_path: Path to source JSON files in bucket.
         :param table_name: Name of table where data will be loaded.
         :param json_paths: Option for Redshift copy statement.
-        :param role_arn: IAM role ARN for copying from S3.
+        :param aws_conn_id: Name of AWS connection to read from S3.
         :param kwargs:
         """
-
         super(StageToRedshiftOperator, self).__init__(*args, **kwargs)
         self._redshift_conn_id = redshift_conn_id
         self.s3_bucket = s3_bucket
         self.s3_path = s3_path
         self.table_name = table_name
         self.json_paths = json_paths
-        self.role_arn = role_arn
+        self.aws_conn_id = aws_conn_id
 
     def execute(self, context):
         """
@@ -52,11 +52,11 @@ class StageToRedshiftOperator(BaseOperator):
         :param context: Run context.
         :return:
         """
+        if self.aws_conn_id is None or self.aws_conn_id == "":
+            self.log.error("No AWS connection specified!")
+            raise ValueError("No AWS connection specified!")
 
-        if self.role_arn is None or self.role_arn == "":
-            self.log.error("No IAM role specified!")
-            raise ValueError("No IAM role specified!")
-
+        aws_cred = AwsBaseHook(aws_conn_id=self.aws_conn_id).get_credentials()
         hook = PostgresHook(postgres_conn_id=self._redshift_conn_id)
 
         # Truncate staging table to avoid adding the same data multiple times!
@@ -69,7 +69,8 @@ class StageToRedshiftOperator(BaseOperator):
         sql_str = self.COPY_STMT.format(
             table=self.table_name,
             src_path=src_path,
-            arn=self.role_arn,
+            access_key=aws_cred.access_key,
+            secret=aws_cred.secret_key,
             json_paths=self.json_paths
         )
         hook.run(sql_str, autocommit=True)

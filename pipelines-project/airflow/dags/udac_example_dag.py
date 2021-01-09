@@ -5,10 +5,7 @@ from airflow.operators.dummy import DummyOperator
 from operators import (StageToRedshiftOperator, LoadFactOperator,
                        LoadDimensionOperator, DataQualityOperator)
 from constants import (S3_BUCKET_NAME, REDSHIFT_CONN_ID, APPEND_MODE,
-                       DEFAULT_ARGS)
-
-# AWS_KEY = os.environ.get('AWS_KEY')
-# AWS_SECRET = os.environ.get('AWS_SECRET')
+                       DEFAULT_ARGS, AWS_CONN_ID)
 
 dag = DAG('udac_example_dag',
           default_args=DEFAULT_ARGS,
@@ -26,7 +23,7 @@ stage_events_to_redshift = StageToRedshiftOperator(
     task_id='Stage_events',
     table_name="staging_events",
     json_paths="s3://udacity-dend/log_json_path.json",
-    role_arn="",
+    aws_conn_id=AWS_CONN_ID,
     dag=dag
 )
 
@@ -35,7 +32,7 @@ stage_songs_to_redshift = StageToRedshiftOperator(
     s3_bucket=S3_BUCKET_NAME,
     s3_path="song_data",
     table_name="staging_songs",
-    role_arn="",
+    aws_conn_id=AWS_CONN_ID,
     task_id='Stage_songs',
     dag=dag
 )
