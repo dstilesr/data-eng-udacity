@@ -160,3 +160,14 @@ data-lakes-project/cluster_meta.json
 data-lakes-project/*.cfg
 data-lakes-project/data/
 data-lakes-project/connection.bash
+
+# Pipelines particulars
+pipelines-project/airflow/*.cfg
+pipelines-project/airflow/*.pid
+pipelines-project/airflow/*.log
+pipelines-project/airflow/*.err
+pipelines-project/airflow/*.out
+pipelines-project/airflow/logs/
+pipelines-project/airflow/webserver_config.py
+pipelines-project/dbcheck.txt
+pipelines-project/*.csv
