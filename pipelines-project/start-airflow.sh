@@ -14,6 +14,7 @@ export $(xargs < .env)
 
 # Connection string for locally run mysql
 export AIRFLOW__CORE__SQL_ALCHEMY_CONN=mysql+mysqlconnector://$MYSQL_USER:$MYSQL_PASSWORD@$MYSQL_HOST:3306/$MYSQL_DATABASE
+echo "CONNECTING TO MYSQL DB ON $MYSQL_HOST"
 
 
 ################################

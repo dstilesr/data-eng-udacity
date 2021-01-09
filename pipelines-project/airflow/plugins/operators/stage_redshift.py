@@ -47,20 +47,28 @@ class StageToRedshiftOperator(BaseOperator):
         self.role_arn = role_arn
 
     def execute(self, context):
+        """
+        Executes the redshift COPY operation from the given source.
+        :param context: Run context.
+        :return:
+        """
 
         if self.role_arn is None or self.role_arn == "":
             self.log.error("No IAM role specified!")
             raise ValueError("No IAM role specified!")
 
         hook = PostgresHook(postgres_conn_id=self._redshift_conn_id)
+        src_path = f"s3://{self.s3_bucket}/{self.s3_path}"
+        self.log.info(f"Copying files from source: {src_path}")
+
         sql_str = self.COPY_STMT.format(
             table=self.table_name,
-            src_path=f"s3://{self.s3_bucket}/{self.s3_path}",
+            src_path=src_path,
             arn=self.role_arn,
             json_paths=self.json_paths
         )
         hook.run(sql_str, autocommit=True)
-        self.log.info(f'Data staged to {self.table_name}')
+        self.log.info(f"Data staged to {self.table_name}")
 
 
 
