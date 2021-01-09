@@ -1,10 +1,10 @@
 import os
-from datetime import datetime, timedelta
 from airflow import DAG
-from airflow.operators.dummy_operator import DummyOperator
-from operators import (StageToRedshiftOperator, LoadFactOperator,
-                                LoadDimensionOperator, DataQualityOperator)
 from helpers import SqlQueries
+from datetime import datetime, timedelta
+from airflow.operators.dummy import DummyOperator
+from operators import (StageToRedshiftOperator, LoadFactOperator,
+                       LoadDimensionOperator, DataQualityOperator)
 
 # AWS_KEY = os.environ.get('AWS_KEY')
 # AWS_SECRET = os.environ.get('AWS_SECRET')
@@ -18,6 +18,8 @@ default_args = {
     "catchup": False,
     "depends_on_past": False
 }
+
+APPEND_MODE: bool = False
 
 dag = DAG('udac_example_dag',
           default_args=default_args,
@@ -56,21 +58,37 @@ load_songplays_table = LoadFactOperator(
 
 load_user_dimension_table = LoadDimensionOperator(
     task_id='Load_user_dim_table',
+    redshift_conn_id="redshift",
+    table_name="users",
+    data_qry=SqlQueries.user_table_insert,
+    append_data=APPEND_MODE,
     dag=dag
 )
 
 load_song_dimension_table = LoadDimensionOperator(
     task_id='Load_song_dim_table',
+    redshift_conn_id="redshift",
+    table_name="songs",
+    append_data=APPEND_MODE,
+    data_qry=SqlQueries.song_table_insert,
     dag=dag
 )
 
 load_artist_dimension_table = LoadDimensionOperator(
     task_id='Load_artist_dim_table',
+    redshift_conn_id="redshift",
+    table_name="artists",
+    append_data=APPEND_MODE,
+    data_qry=SqlQueries.artist_table_insert,
     dag=dag
 )
 
 load_time_dimension_table = LoadDimensionOperator(
     task_id='Load_time_dim_table',
+    redshift_conn_id="redshift",
+    table_name="time",
+    append_data=APPEND_MODE,
+    data_qry=SqlQueries.time_table_insert,
     dag=dag
 )
 
