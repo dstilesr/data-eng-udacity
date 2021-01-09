@@ -14,7 +14,7 @@ class LoadDimensionOperator(BaseOperator):
 
     @apply_defaults
     def __init__(self,
-                 redshift_conn_id: str = "default",
+                 redshift_conn_id: str = "redshift",
                  table_name: str = "",
                  data_qry: str = "",
                  append_data: bool = False,
