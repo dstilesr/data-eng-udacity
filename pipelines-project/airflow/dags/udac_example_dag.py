@@ -20,7 +20,7 @@ dag = DAG('udac_example_dag',
 start_operator = DummyOperator(task_id='Begin_execution',  dag=dag)
 
 stage_events_to_redshift = StageToRedshiftOperator(
-    redshift_conn_id="redshift",
+    redshift_conn_id=REDSHIFT_CONN_ID,
     s3_bucket=S3_BUCKET_NAME,
     s3_path="log_data",
     task_id='Stage_events',
@@ -43,6 +43,8 @@ stage_songs_to_redshift = StageToRedshiftOperator(
 load_songplays_table = LoadFactOperator(
     task_id='Load_songplays_fact_table',
     redshift_conn_id=REDSHIFT_CONN_ID,
+    table_name="songplays",
+    data_qry=SqlQueries.songplay_table_insert,
     dag=dag
 )
 
@@ -84,6 +86,8 @@ load_time_dimension_table = LoadDimensionOperator(
 
 run_quality_checks = DataQualityOperator(
     task_id='Run_data_quality_checks',
+    redshift_conn_id=REDSHIFT_CONN_ID,
+    check_tables=["songplays", "users", "songs", "time", "artists"],
     dag=dag
 )
 
