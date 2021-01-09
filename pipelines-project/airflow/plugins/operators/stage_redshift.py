@@ -58,6 +58,11 @@ class StageToRedshiftOperator(BaseOperator):
             raise ValueError("No IAM role specified!")
 
         hook = PostgresHook(postgres_conn_id=self._redshift_conn_id)
+
+        # Truncate staging table to avoid adding the same data multiple times!
+        self.log.info(f"Truncating staging table {self.table_name}.")
+        hook.run(f"truncate table {self.table_name};")
+
         src_path = f"s3://{self.s3_bucket}/{self.s3_path}"
         self.log.info(f"Copying files from source: {src_path}")
 
