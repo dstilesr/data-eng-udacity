@@ -12,9 +12,8 @@ This project consists of an [Apache Airflow](https://airflow.apache.org/) data p
 whose purpose is to load data from JSON files stored on AWS S3 to the sparkify data
 warehouse hosted on AWS Redshift.
 
-As an important note, **I made some modifications to the code in order to run it with Airflow
-version `2.0`** as opposed to the version `1.10` used in the workspace. To ensure compatibility,
-you may want to install the python packages from the `requirements.txt` file.
+To ensure compatibility, you may want to install the python packages from the 
+`requirements.txt` file.
 
 ## Database Structure
 The database structure follows a star schema similar to the one used in previous projects. This

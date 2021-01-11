@@ -1,7 +1,7 @@
 from airflow.models import BaseOperator
+from airflow.contrib.hooks.aws_hook import AwsHook
+from airflow.hooks.postgres_hook import PostgresHook
 from airflow.utils.decorators import apply_defaults
-from airflow.providers.amazon.aws.hooks.base_aws import AwsBaseHook
-from airflow.providers.postgres.hooks.postgres import PostgresHook
 
 
 class StageToRedshiftOperator(BaseOperator):
@@ -59,10 +59,8 @@ class StageToRedshiftOperator(BaseOperator):
             self.log.error("No AWS connection specified!")
             raise ValueError("No AWS connection specified!")
 
-        aws_cred = AwsBaseHook(
+        aws_cred = AwsHook(
             aws_conn_id=self.aws_conn_id,
-            client_type="s3",
-            region_name=self.aws_region
         ).get_credentials()
 
         hook = PostgresHook(postgres_conn_id=self._redshift_conn_id)
