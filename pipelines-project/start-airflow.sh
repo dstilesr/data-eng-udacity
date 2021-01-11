@@ -29,7 +29,7 @@ else
   python wait_mysql.py
 
   echo "STARTING DB"
-  airflow db init \
+  airflow initdb \
   && echo "INITIALIZED" > $(pwd)/dbcheck.txt \
   && airflow users create --username admin \
                           --role Admin \

@@ -1,6 +1,6 @@
 from airflow.models import BaseOperator
 from airflow.utils.decorators import apply_defaults
-from airflow.providers.postgres.hooks.postgres import PostgresHook
+from airflow.hooks.postgres_hook import PostgresHook
 
 
 class LoadDimensionOperator(BaseOperator):

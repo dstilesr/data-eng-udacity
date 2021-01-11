@@ -171,3 +171,4 @@ pipelines-project/airflow/logs/
 pipelines-project/airflow/webserver_config.py
 pipelines-project/dbcheck.txt
 pipelines-project/*.csv
+pipelines-project/**/venv/*

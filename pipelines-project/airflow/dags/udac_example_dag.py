@@ -1,8 +1,8 @@
 import os
 from airflow import DAG
 from helpers import SqlQueries
-from airflow.operators.dummy import DummyOperator
-from operators import (StageToRedshiftOperator, LoadFactOperator,
+from airflow.operators.dummy_operator import DummyOperator
+from airflow.operators import (StageToRedshiftOperator, LoadFactOperator,
                        LoadDimensionOperator, DataQualityOperator)
 from constants import (S3_BUCKET_NAME, REDSHIFT_CONN_ID, APPEND_MODE,
                        DEFAULT_ARGS, AWS_CONN_ID)
