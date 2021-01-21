@@ -172,3 +172,6 @@ pipelines-project/airflow/webserver_config.py
 pipelines-project/dbcheck.txt
 pipelines-project/*.csv
 pipelines-project/**/venv/*
+
+# Capstone particulars
+capstone-project/raw-data/
