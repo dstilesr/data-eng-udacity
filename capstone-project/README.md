@@ -36,6 +36,40 @@ for data storage.
 ## Data Processing
 
 ### Output Data Structure
+The data is to be organized as follows: since there are two main objects to study, namely storms
+and temperatures, there will be two facts tables in the output: `storms` and `temperatures`. Additionally,
+there will be two dimensions along which to analyze these facts: `location` and `time`.
+
+The `storms` table will contain the following facts about the storm events:
+- `start_date`
+- `location_id` 
+- `event_type`
+- `magnitude_type`
+- `magnitude`
+- `damage_property`
+- `damage_crops`
+- `deaths_direct`
+- `injuries_direct`
+
+The `temperatures` table, on the other hand, will contain the following:
+- `date_year_month`
+- `average_temperature`
+- `average_temperature_uncertainty`
+- `location_id`
+
+Here the date will consist only of the month and year, since the dataset only contains average
+temperatures on a monthly basis. As for the dimension tables, the `location` table contains the 
+following fields:
+- `location_id`
+- `state`
+- `country`
+
+The dimension is determined by state and country because that is the greates common resolution
+common to both datasets. The `time` table has the following fields:
+- `date`
+- `year`
+- `month`
+- `year_month`
 
 ### Pipeline Structure
 
