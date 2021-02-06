@@ -42,6 +42,8 @@ there will be two dimensions along which to analyze these facts: `location` and 
 
 The `storms` table will contain the following facts about the storm events:
 - `start_date`
+- `event_id`
+- `episode_id`
 - `location_id` 
 - `event_type`
 - `magnitude_type`
@@ -50,6 +52,9 @@ The `storms` table will contain the following facts about the storm events:
 - `damage_crops`
 - `deaths_direct`
 - `injuries_direct`
+
+Here `event_id` and `episode_id` are identifiers given by the NWS. One episode may include several
+events.
 
 The `temperatures` table, on the other hand, will contain the following:
 - `date_year_month`
@@ -63,6 +68,8 @@ following fields:
 - `location_id`
 - `state`
 - `country`
+
+The `location_id` field here will be a hash of the state and country of the location.
 
 The dimension is determined by state and country because that is the greates common resolution
 common to both datasets. The `time` table has the following fields:
