@@ -7,6 +7,7 @@
 * [Data Processing](#data-processing)
   * [Output Data Structure](#output-data-structure)
   * [Pipeline Structure](#pipeline-structure)
+* [Running the Pipeline](#running-the-pipeline)    
 * [Future Challenges](#future-challenges)
   * [Scaling Data Volume](#scaling-data-volume)
   * [Running Periodically](#running-periodically)
@@ -81,6 +82,21 @@ common to both datasets. The `time` table has the following fields:
 ### Pipeline Structure
 
 
+## Running the Pipeline
+To run the pipeline you must first upload the raw files to the S3 bucket you will be using. This
+can be done by first downloading the `GlobalTemperaturesByState.csv` from the Kaggle link and running
+the `download_noaa_files.py` script to get the storm data files, and then uploading the resulting files
+to the bucket. Next, fill a `.env` file with the following variables:
+```dotenv
+BUCKET_NAME=
+STORM_DATA_PATH=
+OUTPUT_PATH=
+TEMP_DATA_FILE=
+```
+`STORM_DATA_PATH` denotes the prefix in the bucket that contains the noaa files, `TEMP_DATA_FILE` is the path
+to `GlobalTemperaturesByState.csv` in the bucket, and `OUTPUT_PATH` is the prefix where the processed files
+will be stored in the bucket.
+
 ## Future Challenges
 
 ### Scaling Data Volume
@@ -99,3 +115,7 @@ Spark or Spark Submit operators. One could even set the DAG to spin up an AWS
 [EMR](https://aws.amazon.com/emr/) cluster for the job and then shut it down once the task is completed!
 
 ### Access for Multiple Users
+When it comes to access for many users, S3 can handle reads well, but perhaps the Spark cluster will have
+to be scaled. Another option would be to precompute the most common aggregates to be performed and store
+the results in a database with good support for concurrence such as Cassandra.
+
