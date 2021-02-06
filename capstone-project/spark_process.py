@@ -1,5 +1,5 @@
 import os
-from typing import Optional
+from typing import Optional, Tuple
 from pyspark.sql import functions as F
 from pyspark.sql import SparkSession, DataFrame
 from pyspark.sql.types import StringType, FloatType
@@ -25,10 +25,12 @@ def parse_damage_figure(fig_str: str) -> Optional[float]:
 
     mult_dict = {
         "K": 1000.,
-        "M": 1000000.
+        "M": 1000000.,
+        "B": 1000000000.
     }
     if fig_str[-1].isalpha():
-        out = float(fig_str[:-1]) * mult_dict.get(fig_str[-1], 1.)
+        base_num = float(fig_str[:-1]) if len(fig_str) > 1 else 1.
+        out = base_num * mult_dict.get(fig_str[-1], 1.)
     else:
         out = float(fig_str)
     return out
@@ -73,24 +75,37 @@ def make_date_table(
     return df_dates
 
 
-def make_location_table(temp_raw: DataFrame) -> DataFrame:
+def process_temp_data(temp_raw: DataFrame) -> Tuple[DataFrame, DataFrame]:
     """
-    Makes the locations table from the temperature dataframe.
+    Makes the locations and temperatures tables from the temperature
+    raw dataframe.
     :param temp_raw: Temperature dataframe from csv.
-    :return:
+    :return: The locations and temperatures dataframes.
     """
-    df_locations = temp_raw \
-        .selectExpr(
-            "trim(upper(State)) as state",
-            "trim(upper(Country)) as country"
-        ) \
-        .dropDuplicates() \
+    df_with_locid = temp_raw \
+        .withColumn("state", F.trim(F.upper(F.col("State"))))\
+        .withColumn("country", F.trim(F.upper(F.col("Country")))) \
         .withColumn("location_id", F.md5(F.concat(
             F.col("country"),
             F.col("state")
-        )))
+        ))) \
+        .cache()
 
-    return df_locations
+    df_locations = df_with_locid\
+        .select("location_id", "state", "country")\
+        .dropDuplicates()
+
+    df_temperatures = df_with_locid \
+        .withColumn("date", F.to_date(F.col("dt"), "yyyy-MM-dd")) \
+        .withColumn("date_year_month", F.date_format(F.col("date"), "yyyy-MM"))\
+        .selectExpr(
+            "date_year_month",
+            "location_id",
+            "AverageTemperature as average_temperature",
+            "AverageTemperatureUncertainty as average_temperature_uncertainty"
+        )
+
+    return df_locations, df_temperatures
 
 
 def make_storms_table(storms_raw: DataFrame) -> DataFrame:
@@ -134,6 +149,38 @@ def make_storms_table(storms_raw: DataFrame) -> DataFrame:
     return df_storms_processed
 
 
+def save_tables(
+        storms: DataFrame,
+        temperatures: DataFrame,
+        locations: DataFrame,
+        dates: DataFrame,
+        w_mode: str = "overwrite"):
+    """
+    Saves the dataframes to the S3 bucket in Parquet files.
+    :param storms: Storms df.
+    :param temperatures: Temperatures df.
+    :param locations: Locations df.
+    :param dates: Dates df.
+    :param w_mode: Writing mode for saving.
+    :return:
+    """
+    storms.write\
+        .mode(w_mode)\
+        .parquet(f"s3://{BUCKET}/{OUTPUT_PATH}/storms")
+
+    temperatures.write\
+        .mode(w_mode)\
+        .parquet(f"s3://{BUCKET}/{OUTPUT_PATH}/temperatures")
+
+    locations.write\
+        .mode(w_mode)\
+        .parquet(f"s3://{BUCKET}/{OUTPUT_PATH}/locations")
+
+    dates.write\
+        .mode(w_mode)\
+        .parquet(f"s3://{BUCKET}/{OUTPUT_PATH}/dates")
+
+
 if __name__ == '__main__':
     spark = SparkSession.builder\
         .appName("StormApp")\
@@ -155,9 +202,36 @@ if __name__ == '__main__':
     dates_tab = make_date_table(df_storms_raw, df_temp_raw)
 
     # Locations Dimension
-    locations_tab = make_location_table(df_temp_raw)
+    locations_tab, temperature_tab = process_temp_data(df_temp_raw)
 
     # Storms Fact
     storms_tab = make_storms_table(df_storms_raw)
+
+    # Quality check: assert location_id match for storms df
+    num_storm_recs = storms_tab.count()
+    joined_num = storms_tab\
+        .select("location_id")\
+        .join(locations_tab, "location_id", "inner")\
+        .count()
+
+    if joined_num == 0:
+        # Only assert the number is positive since some locations in the
+        # storms dataset will find no matches since they are not states
+        # proper but could be sea regions or territories.
+        print("ERROR: Storm data location ids are incorrect!")
+        raise ValueError("Storm locations incorrect!")
+
+    # Quality check: assert all dates are present
+    joined_num_dates = storms_tab\
+        .selectExpr("start_date as date")\
+        .join(dates_tab, "date", "inner")\
+        .count()
+
+    if joined_num_dates != num_storm_recs:
+        print("ERROR: Storm data dates do not match!")
+        raise ValueError("Storm dates do not match!")
+
+    # Save Files
+    save_tables(storms_tab, temperature_tab, locations_tab, dates_tab)
 
     spark.stop()

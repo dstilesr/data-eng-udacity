@@ -80,7 +80,15 @@ common to both datasets. The `time` table has the following fields:
 - `year_month`
 
 ### Pipeline Structure
+The pipeline is implemented in pyspark and has the following basic steps:
+- Read the raw temperature and storm data from S3.
+- Create the facts and dimensions tables.
+- Perform some quality checks.
+- Write results to S3.
 
+The quality checks performed are the following:
+- Verify that the location ids were created correctly by joining the storms and locations tables.
+- Verify that all the dates are present by joining the storms and dates tables.
 
 ## Running the Pipeline
 To run the pipeline you must first upload the raw files to the S3 bucket you will be using. This
@@ -95,7 +103,9 @@ TEMP_DATA_FILE=
 ```
 `STORM_DATA_PATH` denotes the prefix in the bucket that contains the noaa files, `TEMP_DATA_FILE` is the path
 to `GlobalTemperaturesByState.csv` in the bucket, and `OUTPUT_PATH` is the prefix where the processed files
-will be stored in the bucket.
+will be stored in the bucket. If you want to run the job on a cluster, run the `prepare_submit_command.py` script
+to prepare the spark-submit command to include the necessary environment variables. Then you can run the pipeline
+by using the `spark_process.py` script.
 
 ## Future Challenges
 
@@ -119,3 +129,4 @@ When it comes to access for many users, S3 can handle reads well, but perhaps th
 to be scaled. Another option would be to precompute the most common aggregates to be performed and store
 the results in a database with good support for concurrence such as Cassandra.
 
+[Back to top.](#capstone-project)
