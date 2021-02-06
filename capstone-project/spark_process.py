@@ -73,6 +73,26 @@ def make_date_table(
     return df_dates
 
 
+def make_location_table(temp_raw: DataFrame) -> DataFrame:
+    """
+    Makes the locations table from the temperature dataframe.
+    :param temp_raw: Temperature dataframe from csv.
+    :return:
+    """
+    df_locations = temp_raw \
+        .selectExpr(
+            "trim(upper(State)) as state",
+            "trim(upper(Country)) as country"
+        ) \
+        .dropDuplicates() \
+        .withColumn("location_id", F.md5(F.concat(
+            F.col("country"),
+            F.col("state")
+        )))
+
+    return df_locations
+
+
 def make_storms_table(storms_raw: DataFrame) -> DataFrame:
     """
     Makes the storms table from the raw storms data read from the csvs.
@@ -133,6 +153,9 @@ if __name__ == '__main__':
 
     # Dates dimension
     dates_tab = make_date_table(df_storms_raw, df_temp_raw)
+
+    # Locations Dimension
+    locations_tab = make_location_table(df_temp_raw)
 
     # Storms Fact
     storms_tab = make_storms_table(df_storms_raw)
