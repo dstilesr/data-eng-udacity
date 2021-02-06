@@ -1,4 +1,5 @@
 import os
+import re
 from typing import Optional, Tuple
 from pyspark.sql import functions as F
 from pyspark.sql import SparkSession, DataFrame
@@ -7,7 +8,10 @@ from pyspark.sql.types import StringType, FloatType
 BUCKET = os.getenv("BUCKET_NAME", "dsr-udacity-capstone")
 STORM_DATA_PATH = os.getenv("STORM_DATA_PATH", "storm-data")
 OUTPUT_PATH = os.getenv("OUTPUT_PATH", "processed-data")
-TEMP_DATA_FILE = os.getenv("TEMP_DATA_FILE")
+TEMP_DATA_FILE = os.getenv(
+    "TEMP_DATA_FILE",
+    "temp-data/GlobalLandTemperaturesByState.csv"
+)
 
 pad_day = F.udf(lambda d: f"{int(d):02d}", StringType())
 
@@ -28,11 +32,12 @@ def parse_damage_figure(fig_str: str) -> Optional[float]:
         "M": 1000000.,
         "B": 1000000000.
     }
-    if fig_str[-1].isalpha():
-        base_num = float(fig_str[:-1]) if len(fig_str) > 1 else 1.
-        out = base_num * mult_dict.get(fig_str[-1], 1.)
+    clean_str = re.sub(r"[^\dA-Z\.]", "", fig_str.upper())
+    if clean_str[-1].isalpha():
+        base_num = float(clean_str[:-1]) if len(clean_str) > 1 else 1.
+        out = base_num * mult_dict.get(clean_str[-1], 1.)
     else:
-        out = float(fig_str)
+        out = float(fig_str) if len(clean_str) > 0 else 0
     return out
 
 
