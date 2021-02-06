@@ -33,11 +33,11 @@ def parse_damage_figure(fig_str: str) -> Optional[float]:
         "B": 1000000000.
     }
     clean_str = re.sub(r"[^\dA-Z\.]", "", fig_str.upper())
-    if clean_str[-1].isalpha():
+    if len(clean_str) > 0 and clean_str[-1].isalpha():
         base_num = float(clean_str[:-1]) if len(clean_str) > 1 else 1.
         out = base_num * mult_dict.get(clean_str[-1], 1.)
     else:
-        out = float(fig_str) if len(clean_str) > 0 else 0
+        out = float(clean_str) if len(clean_str) > 0 else 0
     return out
 
 
