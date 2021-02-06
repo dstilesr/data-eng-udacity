@@ -1,0 +1,1 @@
+/usr/bin/spark-submit --master yarn --deploy-mode cluster {env_conf} spark_process.py

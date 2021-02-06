@@ -176,3 +176,4 @@ pipelines-project/**/venv/*
 
 # Capstone particulars
 capstone-project/raw-data/
+capstone-project/submit_command.sh
