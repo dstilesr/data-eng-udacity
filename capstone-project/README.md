@@ -3,9 +3,10 @@
 ## Contents
 * [About](#about)
   * [Purpose](#purpose)
+  * [Technologies](#technologies) 
   * [Data Sources](#data-sources)
 * [Data Processing](#data-processing)
-  * [Output Data Structure](#output-data-structure)
+  * [Output Data Model](#output-data-model)
   * [Dictionary](#dictionary) 
   * [Pipeline Structure](#pipeline-structure)
 * [Running the Pipeline](#running-the-pipeline)    
@@ -24,6 +25,7 @@ their own or in relationship with the temperature data. The idea is to use
 source csvs (which should be stored on S3), clean and organize it, and  then store the 
 resulting data as parquet files on S3.
 
+### Technologies
 Spark was chosen for this job because of its speed, versatility, and horizontal scalability. The
 most important aspect of this is that Spark runs on a cluster and can thus leverage the memory and
 compute capabilities of several machines to handle the large amounts of data involved in this project.
@@ -44,10 +46,17 @@ for data storage.
 
 ## Data Processing
 
-### Output Data Structure
-The data is to be organized as follows: since there are two main objects to study, namely storms
-and temperatures, there will be two facts tables in the output: `storms` and `temperatures`. Additionally,
-there will be two dimensions along which to analyze these facts: `location` and `time`. This allows the study of
+### Output Data Model
+The data is to be organized in a small snowflake-type schema (in a Data Lake in S3) with two fact and two dimension 
+tables. Each table will be stored as a Parquet dataset in S3. Parquet was chosen because of its scalability and 
+ability to partition the dataset as well as its columnar storage which allows one to efficiently access only the fields 
+one wants to use. This also reduces the administrative overhead and possible scalability problems one could face when
+placing the data in a relational database or in a traditional data warehouse.
+Now, the tables in which the output data is stored are as follows: given that there are two main objects to study, 
+namely storms and temperatures, there will be two facts tables in the output: `storms` and `temperatures`. Additionally,
+there will be two dimensions along which to analyze these facts: `location` and `time`. 
+
+This data structure allows the study of
 both facts by location and time independently as well as studying the facts together by joining them by location
 and time. This is due to the fact that the most common aggregations I expect to perform on the data are by time (either
 year of month) or location. With this one can perform analysis based on time, such as studying trends in temperatures and 
@@ -78,14 +87,18 @@ The `temperatures` table, on the other hand, will contain the following:
   `locations` table.
 
 Here the date will consist only of the month and year, since the dataset only contains average
-temperatures on a monthly basis. As for the dimension tables, the `location` table contains the 
+temperatures on a monthly basis. 
+
+As for the dimension tables, the `location` table contains the 
 following fields:
 - `location_id`: Unique ID of the location (hash of the state and country).
 - `state`: State (within the country).
 - `country`: Country.
 
-The dimension is determined by state and country because that is the greates common resolution
-common to both datasets. The `time` table has the following fields:
+The dimension is determined by state and country because that is the greatest common resolution
+common to both datasets. 
+
+The `time` table has the following fields:
 - `date`: Date.
 - `year`: Year of the date (integer).
 - `month`: Month of the date (integer).
