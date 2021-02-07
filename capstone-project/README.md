@@ -17,7 +17,7 @@
 
 ### Purpose
 The purpose of the project is to structure both Earth Surface Temperature and Storm Events
-data ([Sources Below](#data-sources)) in order to study possible these phenomena either on 
+data ([Sources Below](#data-sources)) in order to study these phenomena either on 
 their own or in relationship with the temperature data. The idea is to use
 [Apache Spark](https://spark.apache.org/) to create a pipeline to read the data from the
 source csvs (which should be stored on S3), clean and organize it, and  then store the 
@@ -42,42 +42,40 @@ and temperatures, there will be two facts tables in the output: `storms` and `te
 there will be two dimensions along which to analyze these facts: `location` and `time`.
 
 The `storms` table will contain the following facts about the storm events:
-- `start_date`
-- `event_id`
-- `episode_id`
-- `location_id` 
-- `event_type`
-- `magnitude_type`
-- `magnitude`
-- `damage_property`
-- `damage_crops`
-- `deaths_direct`
-- `injuries_direct`
-
-Here `event_id` and `episode_id` are identifiers given by the NWS. One episode may include several
-events.
+- `start_date`: Date in which the storm event started.
+- `event_id`: ID of the storm event given by the NWS.
+- `episode_id`: ID of the episode given by the NWS. One episode can contain several events.
+- `location_id`: ID of the location (state) where the event occurred. This can be used to join to the
+  `locations` table.
+- `event_type`: Type of event (text).
+- `magnitude_type`: Type of magnitude measurement recorded (if magnitude is provided).
+- `magnitude`: Magnitude measurement.
+- `damage_property`: Estimated damage to property caused (in US dollars).
+- `damage_crops`: Estimated damage to property caused (in US dollars).
+- `deaths_direct`: Deaths directly caused by the event.
+- `injuries_direct`: Injuries directly caused by the event.
 
 The `temperatures` table, on the other hand, will contain the following:
-- `date_year_month`
-- `average_temperature`
-- `average_temperature_uncertainty`
-- `location_id`
+- `date_year_month`: Year and month in which the measurement was taken. This can be used to join to the
+  `dates` table.
+- `average_temperature`: Average temperature for the given period.
+- `average_temperature_uncertainty`: Uncertainty for the temperature measurement.
+- `location_id`: ID of the location where the measurement was taken. his can be used to join to the
+  `locations` table.
 
 Here the date will consist only of the month and year, since the dataset only contains average
 temperatures on a monthly basis. As for the dimension tables, the `location` table contains the 
 following fields:
-- `location_id`
-- `state`
-- `country`
-
-The `location_id` field here will be a hash of the state and country of the location.
+- `location_id`: Unique ID of the location (hash of the state and country).
+- `state`: State (within the country).
+- `country`: Country.
 
 The dimension is determined by state and country because that is the greates common resolution
 common to both datasets. The `time` table has the following fields:
-- `date`
-- `year`
-- `month`
-- `year_month`
+- `date`: Date.
+- `year`: Year of the date.
+- `month`: Month.
+- `year_month`: Year and month of the date in `yyyy-MM` format.
 
 ### Pipeline Structure
 The pipeline is implemented in pyspark and has the following basic steps:
