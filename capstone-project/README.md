@@ -49,9 +49,9 @@ The data is to be organized as follows: since there are two main objects to stud
 and temperatures, there will be two facts tables in the output: `storms` and `temperatures`. Additionally,
 there will be two dimensions along which to analyze these facts: `location` and `time`. This allows the study of
 both facts by location and time independently as well as studying the facts together by joining them by location
-and time. This points to the fact that the most common aggregations I expect to perform on the data are by time (either
-year of month) or location. With this one can perform analysis based on time, such as studying trends in temperatures and storm 
-severity, as well as analysis based on location, like seeing which kinds of storms occur in different areas, 
+and time. This is due to the fact that the most common aggregations I expect to perform on the data are by time (either
+year of month) or location. With this one can perform analysis based on time, such as studying trends in temperatures and 
+storm severity, as well as analysis based on location, like seeing which kinds of storms occur in different areas, 
 for example.
 
 ### Dictionary
