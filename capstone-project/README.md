@@ -6,6 +6,7 @@
   * [Data Sources](#data-sources)
 * [Data Processing](#data-processing)
   * [Output Data Structure](#output-data-structure)
+  * [Dictionary](#dictionary) 
   * [Pipeline Structure](#pipeline-structure)
 * [Running the Pipeline](#running-the-pipeline)    
 * [Future Challenges](#future-challenges)
@@ -23,7 +24,14 @@ their own or in relationship with the temperature data. The idea is to use
 source csvs (which should be stored on S3), clean and organize it, and  then store the 
 resulting data as parquet files on S3.
 
-Spark was chosen for this job because of its speed, versatility, and horizontal scalability.
+Spark was chosen for this job because of its speed, versatility, and horizontal scalability. The
+most important aspect of this is that Spark runs on a cluster and can thus leverage the memory and
+compute capabilities of several machines to handle the large amounts of data involved in this project.
+It also has the benefit of allowing SQL-like syntax for querying data, which can make performing
+analytics much easier. Yet another benefit of this approach is that if the data storage were to be
+changed and instead the data would be loaded to HDFS on the cluster, for example, the same pipeline
+code could still be used with only minimal changes.
+
 S3 was chosen for storing the data because it is less expensive for storing data at rest and
 requires less administration overhead than storing the data on HDFS or in a database (SQL or
 NoSQL). S3 also has good scalability and availability properties that make it a good choice
@@ -39,8 +47,14 @@ for data storage.
 ### Output Data Structure
 The data is to be organized as follows: since there are two main objects to study, namely storms
 and temperatures, there will be two facts tables in the output: `storms` and `temperatures`. Additionally,
-there will be two dimensions along which to analyze these facts: `location` and `time`.
+there will be two dimensions along which to analyze these facts: `location` and `time`. This allows the study of
+both facts by location and time independently as well as studying the facts together by joining them by location
+and time. This points to the fact that the most common aggregations I expect to perform on the data are by time (either
+year of month) or location. With this one can perform analysis based on time, such as studying trends in temperatures and storm 
+severity, as well as analysis based on location, like seeing which kinds of storms occur in different areas, 
+for example.
 
+### Dictionary
 The `storms` table will contain the following facts about the storm events:
 - `start_date`: Date in which the storm event started.
 - `event_id`: ID of the storm event given by the NWS.
@@ -73,8 +87,8 @@ following fields:
 The dimension is determined by state and country because that is the greates common resolution
 common to both datasets. The `time` table has the following fields:
 - `date`: Date.
-- `year`: Year of the date.
-- `month`: Month.
+- `year`: Year of the date (integer).
+- `month`: Month of the date (integer).
 - `year_month`: Year and month of the date in `yyyy-MM` format.
 
 ### Pipeline Structure
